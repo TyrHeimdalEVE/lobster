@@ -362,7 +362,7 @@ EOF
     }
     extract_from_json() {
         video_link=$(printf "%s" "$json_data" | tr '[' '\n' | $sed -nE 's@.*\"file\":\"(.*\.m3u8).*@\1@p' | head -1)
-        [ -n "$quality" ] && video_link=$(printf "%s" "$video_link" | $sed -e "s|/playlist.m3u8|/$quality/index.m3u8|")
+        [ -n "$quality" ] && video_link=$(printf "%s" "$video_link" | sed "s|/[0-9]\+/index.m3u8|/$quality/index.m3u8|")
 
         [ "$json_output" = "true" ] && printf "%s\n" "$json_data" && exit 0
         subs_links=$(printf "%s" "$json_data" | tr "{}" "\n" | $sed -nE "s@.*\"file\":\"([^\"]*)\",\"label\":\"(.$subs_language)[,\"\ ].*@\1@p")
@@ -574,7 +574,7 @@ EOF
                 eval "$player_cmd" >&3 &
 
                 if [ -z "$quality" ]; then
-                    link=$(printf "%s" "$video_link" | $sed "s/\/playlist.m3u8/\/1080\/index.m3u8/g")
+                    quality=1080
                 else
                     link=$video_link
                 fi
